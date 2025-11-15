@@ -1,5 +1,8 @@
 services:
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
       - .env
     depends_on:
@@ -9,6 +12,10 @@ services:
         condition: service_started
       minio:
         condition: service_healthy
+    ports:
+      - "8080:8080"
+    restart: always
+
   postgres:
     image: postgres:18-alpine
     environment:
@@ -44,8 +51,8 @@ services:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
     ports:
-      - "9000:9000" # S3 API
-      - "9001:9001" # Console
+      - "9000:9000"
+      - "9001:9001"
     volumes:
       - miniodata:/data
     healthcheck:
