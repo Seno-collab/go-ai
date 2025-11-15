@@ -1,4 +1,0 @@
-{"level":"info","time":"2025-10-16T15:28:35.52601+07:00","caller":"/Users/home/DA/go-ai/cmd/main.go:35","message":"Shutting down server..."}
-{"level":"info","time":"2025-10-16T15:28:35.532215+07:00","caller":"/Users/home/DA/go-ai/cmd/main.go:43","message":"Server exited gracefully"}
-{"level":"info","time":"2025-10-25T17:03:57.426451+07:00","caller":"/Users/home/DA/go-ai/cmd/api/main.go:35","message":"Shutting down server..."}
-{"level":"info","time":"2025-10-25T17:03:57.430381+07:00","caller":"/Users/home/DA/go-ai/cmd/api/main.go:43","message":"Server exited gracefully"}
