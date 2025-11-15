@@ -9,7 +9,6 @@ services:
         condition: service_started
       minio:
         condition: service_healthy
-
   postgres:
     image: postgres:18-alpine
     environment:
