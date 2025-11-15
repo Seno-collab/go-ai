@@ -1,17 +1,5 @@
 version: "3.9"
 services:
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     target: base
-  #   command: sh -c "go mod download && go run main.go"
-    # working_dir: /app 
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
-    # ports:
-    #   - "${PORT-3000}:3000"
     env_file:
       - .env
     depends_on:
