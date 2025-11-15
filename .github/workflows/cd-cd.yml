@@ -52,12 +52,6 @@ jobs:
           else
             echo "📁 Folder exists — updating repository..."
             cd "$APP_PATH"
-            echo "📁 Folder exists — updating repository..."
-
-            if [ ! -d "$APP_PATH/.git" ]; then
-              echo "⚠️ No .git folder found — reinitializing repo..."
-              git clone git@github.com:${{ github.repository }}.git "$APP_PATH"
-            else
               echo "🔄 Pulling latest changes..."
               git fetch origin main
               git reset --hard origin/main
