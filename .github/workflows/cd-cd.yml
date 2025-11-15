@@ -1,0 +1,67 @@
+name: CI-CD
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: go-ai
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Add known_hosts
+        run: ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync project to server
+        run: |
+          rsync -avz --delete \
+            --exclude 'node_modules' \
+            --exclude '.git' \
+            --exclude '.github' \
+            ./ \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
+
+      - name: Deploy on server
+        run: |
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          set -e
+          APP_PATH=${{ secrets.DEPLOY_PATH }}
+
+          echo "🔧 Creating .env file..."
+          cat << 'ENVEOF' > .env
+          ${{ secrets.ENV_FILE }}
+          ENVEOF
+
+          echo "📂 Checking app folder..."
+          if [ ! -d "$APP_PATH" ]; then
+            echo "📁 Folder does not exist — creating..."
+            cd "$APP_PATH"
+            echo "⬇️ Cloning new repository..."
+            git clone git@github.com:${{ github.repository }}.git .
+          else
+            echo "📁 Folder exists — updating repository..."
+            cd "$APP_PATH"
+            if [ -d ".git" ]; then
+              echo "🔄 Pulling latest changes..."
+              git reset --hard
+              git pull origin main
+            else
+              echo "⚠️ No .git folder found — reinitializing repo..."
+              rm -rf * .[^.]* 2>/dev/null || true
+              git clone git@github.com:${{ github.repository }}.git .
+            fi
+          fi
+
+          docker compose down
+          docker compose up -d --build --remove-orphans
+          docker image prune -f
+          EOF
