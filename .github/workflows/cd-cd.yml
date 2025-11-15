@@ -56,11 +56,9 @@ jobs:
 
             if [ ! -d "$APP_PATH/.git" ]; then
               echo "⚠️ No .git folder found — reinitializing repo..."
-              rm -rf "$APP_PATH"
               git clone git@github.com:${{ github.repository }}.git "$APP_PATH"
             else
               echo "🔄 Pulling latest changes..."
-              cd "$APP_PATH"
               git fetch origin main
               git reset --hard origin/main
             fi
