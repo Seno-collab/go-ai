@@ -24,9 +24,11 @@ jobs:
       - name: Sync project to server
         run: |
           rsync -avz --delete \
-            --exclude 'node_modules' \
             --exclude '.git' \
             --exclude '.github' \
+            --exclude 'bin' \
+            --exclude 'dist' \
+            --exclude 'app' \
             ./ \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
 
