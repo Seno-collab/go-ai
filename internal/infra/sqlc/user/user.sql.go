@@ -13,7 +13,7 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO "user" (email, full_name, password_hash, role_id) VALUES ($1, $2, $3, $4)
+INSERT INTO "user" (email, full_name, password_hash, role_id) VALUES ($1, $2, $3,(SELECT id FROM role WHERE role_name = 'user'))
 RETURNING id
 `
 
@@ -21,40 +21,67 @@ type CreateUserParams struct {
 	Email        *string
 	FullName     string
 	PasswordHash string
-	RoleID       int
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (uuid.UUID, error) {
-	row := q.db.QueryRow(ctx, createUser,
-		arg.Email,
-		arg.FullName,
-		arg.PasswordHash,
-		arg.RoleID,
-	)
+	row := q.db.QueryRow(ctx, createUser, arg.Email, arg.FullName, arg.PasswordHash)
 	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT u.id, u.email, u.full_name, r.role_name, u.is_active, u.created_at, u.updated_at FROM "user" u
-INNER JOIN  "role" r ON r.role_id = u.role_id
+SELECT u.id, u.email, u.full_name, r.role_name, u.password_hash, u.is_active, u.created_at, u.updated_at FROM "user" u
+LEFT JOIN  "role" r ON r.id = u.role_id
 WHERE email = $1 LIMIT 1
 `
 
 type GetUserByEmailRow struct {
-	ID        uuid.UUID
-	Email     *string
-	FullName  string
-	RoleName  string
-	IsActive  bool
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID           uuid.UUID
+	Email        *string
+	FullName     string
+	RoleName     *string
+	PasswordHash string
+	IsActive     bool
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email *string) (GetUserByEmailRow, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i GetUserByEmailRow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.FullName,
+		&i.RoleName,
+		&i.PasswordHash,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+SELECT u.id, u.email, u.full_name, r.role_name, u.is_active, u.created_at, u.updated_at FROM "user" u
+LEFT JOIN "role" r ON r.id = u.role_id
+WHERE u.id = $1 LIMIT 1
+`
+
+type GetUserByIDRow struct {
+	ID        uuid.UUID
+	Email     *string
+	FullName  string
+	RoleName  *string
+	IsActive  bool
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
+	row := q.db.QueryRow(ctx, getUserByID, id)
+	var i GetUserByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
@@ -67,25 +94,25 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email *string) (GetUserByE
 	return i, err
 }
 
-const getUserByID = `-- name: GetUserByID :one
+const getUserByName = `-- name: GetUserByName :one
 SELECT u.id, u.email, u.full_name, r.role_name, u.is_active, u.created_at, u.updated_at FROM "user" u
-INNER JOIN "role" r ON r.role_id = u.role_id
-WHERE u.id = $1 LIMIT 1
+LEFT JOIN  "role" r ON r.id = u.role_id
+WHERE full_name = $1 LIMIT 1
 `
 
-type GetUserByIDRow struct {
+type GetUserByNameRow struct {
 	ID        uuid.UUID
 	Email     *string
 	FullName  string
-	RoleName  string
+	RoleName  *string
 	IsActive  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
-	row := q.db.QueryRow(ctx, getUserByID, id)
-	var i GetUserByIDRow
+func (q *Queries) GetUserByName(ctx context.Context, fullName string) (GetUserByNameRow, error) {
+	row := q.db.QueryRow(ctx, getUserByName, fullName)
+	var i GetUserByNameRow
 	err := row.Scan(
 		&i.ID,
 		&i.Email,

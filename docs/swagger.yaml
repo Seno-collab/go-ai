@@ -1,4 +1,47 @@
 definitions:
+  common.ErrorDetail:
+    properties:
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  handler.ErrorResponseDoc:
+    properties:
+      error:
+        $ref: '#/definitions/common.ErrorDetail'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
+  handler.LoginSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handler.ResponseLogin'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
+  handler.RefreshTokenResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+    type: object
+  handler.RefreshTokenSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handler.RefreshTokenResponse'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
   handler.RegisterReq:
     properties:
       email:
@@ -22,10 +65,81 @@ definitions:
       response_code:
         type: string
     type: object
+  handler.RequestLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handler.ResponseLogin:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /users/register:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return access and refresh tokens
+      parameters:
+      - description: User login payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.RequestLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/handler.LoginSuccessResponse'
+        default:
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/handler.ErrorResponseDoc'
+      summary: User login
+      tags:
+      - Auth
+  /api/auth/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Generate a new access token using a valid refresh token
+      parameters:
+      - description: Refresh token payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.RefreshTokenSuccessResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token refreshed successfully
+          schema:
+            $ref: '#/definitions/handler.RefreshTokenResponse'
+        default:
+          description: Invalid refresh token
+          schema:
+            $ref: '#/definitions/handler.ErrorResponseDoc'
+      summary: Refresh access token
+      tags:
+      - Auth
+  /api/auth/register:
     post:
       consumes:
       - application/json
@@ -44,6 +158,10 @@ paths:
           description: User created successfully
           schema:
             $ref: '#/definitions/handler.RegisterSuccessResponse'
+        default:
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/handler.ErrorResponseDoc'
       summary: Register a new user
       tags:
       - Auth

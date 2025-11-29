@@ -39,7 +39,7 @@ jobs:
           APP_PATH=${{ secrets.DEPLOY_PATH }}
 
           echo "🔧 Creating .env file..."
-          cat << 'ENVEOF' > .env
+          cat << 'ENVEOF' > "$APP_PATH/.env"
           ${{ secrets.ENV_FILE }}
           ENVEOF
 

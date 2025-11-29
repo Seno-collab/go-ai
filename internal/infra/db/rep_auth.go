@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
-	domain "go-ai/internal/domain/auth"
-	"go-ai/internal/infra/sqlc"
+	auth "go-ai/internal/domain/auth"
+	sqlc "go-ai/internal/infra/sqlc/user"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,26 +19,58 @@ func NewAuthRepo(pool *pgxpool.Pool) *AuthRepo {
 	}
 }
 
-func (r *AuthRepo) GetByEmail(email string) (*domain.Auth, error) {
+func (r *AuthRepo) GetByEmail(email string) (*auth.Entity, error) {
 	u, err := r.q.GetUserByEmail(context.Background(), &email)
 	if err != nil {
 		return nil, err
 	}
 
-	return &domain.Auth{
-		ID:    u.ID,
-		Email: *u.Email,
+	return &auth.Entity{
+		ID:       u.ID,
+		Email:    *u.Email,
+		FullName: u.FullName,
+		Password: u.PasswordHash,
+		Role:     *u.RoleName,
+		IsActive: u.IsActive,
 	}, nil
 }
 
-func (r *AuthRepo) CreateUser(a *domain.Auth) (uuid.UUID, error) {
+func (r *AuthRepo) CreateUser(a *auth.Entity) (uuid.UUID, error) {
 	id, err := r.q.CreateUser(context.Background(), sqlc.CreateUserParams{
 		Email:        &a.Email,
 		PasswordHash: a.Password,
+		FullName:     a.FullName,
 	})
 	if err != nil {
 		return uuid.Nil, err
 	}
 
 	return id, nil
+}
+func (r *AuthRepo) GetByName(name string) (*auth.Entity, error) {
+	u, err := r.q.GetUserByName(context.Background(), name)
+	if err != nil {
+		return nil, err
+	}
+	return &auth.Entity{
+		ID:       u.ID,
+		Email:    *u.Email,
+		FullName: u.FullName,
+		Role:     *u.RoleName,
+		IsActive: u.IsActive,
+	}, nil
+}
+
+func (r *AuthRepo) GetById(id uuid.UUID) (*auth.Entity, error) {
+	u, err := r.q.GetUserByID(context.Background(), id)
+	if err != nil {
+		return nil, err
+	}
+	return &auth.Entity{
+		ID:       u.ID,
+		Email:    *u.Email,
+		FullName: u.FullName,
+		Role:     *u.RoleName,
+		IsActive: u.IsActive,
+	}, nil
 }

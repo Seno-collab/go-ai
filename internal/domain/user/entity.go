@@ -1,8 +1,6 @@
 package user
 
 import (
-	"strings"
-
 	"github.com/google/uuid"
 )
 
@@ -14,12 +12,12 @@ type User struct {
 	RoleId   int
 }
 
-func (u *User) Validate() error {
-	if !strings.Contains(u.Email, "@") {
-		return ErrInvalidEmail
-	}
-	if strings.TrimSpace(u.FullName) == "" {
-		return ErrInvalidName
-	}
-	return nil
-}
+// func (u *User) Validate() error {
+// 	if !strings.Contains(u.Email, "@") {
+// 		return ErrInvalidEmail
+// 	}
+// 	if strings.TrimSpace(u.FullName) == "" {
+// 		return ErrInvalidName
+// 	}
+// 	return nil
+// }

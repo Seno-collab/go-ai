@@ -34,6 +34,6 @@ migrate-up:
 		-database "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" \
 		up
 
-build: 
+build:
 	swag init -g cmd/main.go -o docs
 	go run cmd/main.go

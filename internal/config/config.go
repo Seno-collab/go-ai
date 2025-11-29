@@ -9,21 +9,23 @@ import (
 )
 
 type Config struct {
-	JwtAccessSecret  string `mapstructure:"JWT_SECRET"`
-	JwtRefreshSecret string `mapstructure:"JWT_REFRESH_SECRET"`
-	RedisHost        string `mapstructure:"REDIS_HOST"`
-	RedisPassword    string `mapstructure:"REDIS_PASSWORD"`
-	RedisPort        int    `mapstructure:"REDIS_PORT"`
-	RedisDB          int    `mapstructure:"REDIS_DB"`
-	DBName           string `mapstructure:"POSTGRES_DB"`
-	DBHost           string `mapstructure:"POSTGRES_HOST"`
-	DBPort           string `mapstructure:"POSTGRES_PORT"`
-	DBUser           string `mapstructure:"POSTGRES_USER"`
-	DBPassword       string `mapstructure:"POSTGRES_PASSWORD"`
-	DBSSLMode        string `mapstructure:"db_sslmode"`
-	ServerPort       string `mapstructure:"PORT"`
-	ServerHost       string `mapstructure:"server_host"`
-	Environment      string `mapstructure:"ENVIRONMENT"`
+	JwtAccessSecret     string `mapstructure:"JWT_SECRET"`
+	JwtRefreshSecret    string `mapstructure:"JWT_REFRESH_SECRET"`
+	JwtExpiresIn        int    `mapstructure:"JWT_EXPIRES_IN"`
+	JwtRefreshExpiresIn int    `mapstructure:"JWT_REFRESH_EXPIRES_IN"`
+	RedisHost           string `mapstructure:"REDIS_HOST"`
+	RedisPassword       string `mapstructure:"REDIS_PASSWORD"`
+	RedisPort           int    `mapstructure:"REDIS_PORT"`
+	RedisDB             int    `mapstructure:"REDIS_DB"`
+	DBName              string `mapstructure:"POSTGRES_DB"`
+	DBHost              string `mapstructure:"POSTGRES_HOST"`
+	DBPort              string `mapstructure:"POSTGRES_PORT"`
+	DBUser              string `mapstructure:"POSTGRES_USER"`
+	DBPassword          string `mapstructure:"POSTGRES_PASSWORD"`
+	DBSSLMode           string `mapstructure:"db_sslmode"`
+	ServerPort          string `mapstructure:"PORT"`
+	ServerHost          string `mapstructure:"server_host"`
+	Environment         string `mapstructure:"ENVIRONMENT"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -59,11 +61,6 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	logger.Info().
-		Str("environment", cfg.Environment).
-		Str("server_port", cfg.ServerPort).
-		Str("db_host", cfg.DBHost).
-		Msg("configuration loaded successfully")
 	return cfg, nil
 }
 
@@ -71,7 +68,8 @@ func setDefaults() {
 	// JWT defaults
 	viper.SetDefault("jwt_access_secret", "your-access-secret-key")
 	viper.SetDefault("jwt_refresh_secret", "your-refresh-secret-key")
-
+	viper.SetDefault("jwt_expires_in", 3000)            // in second
+	viper.SetDefault("jwt_refresh_expires_in", 6480000) // in second (30 days)
 	// Redis defaults
 	viper.SetDefault("redis_host", "localhost")
 	viper.SetDefault("redis_port", 6379)

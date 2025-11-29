@@ -20,8 +20,6 @@ type SuccessResponseDoc[T any] struct {
 	Data         *T     `json:"data,omitempty"`
 }
 
-
-
 type ErrorDetail struct {
 	Field   string `json:"field,omitempty"`
 	Message string `json:"message,omitempty"`

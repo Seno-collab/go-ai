@@ -1,15 +1,20 @@
 -- name: GetUserByID :one
 SELECT u.id, u.email, u.full_name, r.role_name, u.is_active, u.created_at, u.updated_at FROM "user" u
-INNER JOIN "role" r ON r.role_id = u.role_id
+LEFT JOIN "role" r ON r.id = u.role_id
 WHERE u.id = $1 LIMIT 1;
 
 -- name: GetUserByEmail :one
-SELECT u.id, u.email, u.full_name, r.role_name, u.is_active, u.created_at, u.updated_at FROM "user" u
-INNER JOIN  "role" r ON r.role_id = u.role_id
+SELECT u.id, u.email, u.full_name, r.role_name, u.password_hash, u.is_active, u.created_at, u.updated_at FROM "user" u
+LEFT JOIN  "role" r ON r.id = u.role_id
 WHERE email = $1 LIMIT 1;
 
+-- name: GetUserByName :one
+SELECT u.id, u.email, u.full_name, r.role_name, u.is_active, u.created_at, u.updated_at FROM "user" u
+LEFT JOIN  "role" r ON r.id = u.role_id
+WHERE full_name = $1 LIMIT 1;
+
 -- name: CreateUser :one
-INSERT INTO "user" (email, full_name, password_hash, role_id) VALUES ($1, $2, $3, $4)
+INSERT INTO "user" (email, full_name, password_hash, role_id) VALUES ($1, $2, $3,(SELECT id FROM role WHERE role_name = 'user'))
 RETURNING id;
 
 -- name: UpdateUser :one

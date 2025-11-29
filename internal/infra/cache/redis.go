@@ -9,8 +9,6 @@ func ConnectRedis(dsn string) (*redis.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client := redis.NewClient(opt)
-	return client, nil
+	reidsClient := redis.NewClient(opt)
+	return reidsClient, nil
 }
-
-

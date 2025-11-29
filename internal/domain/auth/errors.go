@@ -3,10 +3,13 @@ package auth
 import "errors"
 
 var (
-	ErrNotFound        = errors.New("user not found")
-	ErrInvalidEmail    = errors.New("invalid email")
-	ErrInvalidPassword = errors.New("invalid password")
-	ErrInvalidName     = errors.New("invalid name")
-	ErrConflict        = errors.New("email already exists")
-	ErrUserExists      = errors.New("user already exists")
+	ErrPasswordVerifyFail      = errors.New("Password verification failed")
+	ErrTokenInvalid            = errors.New("Token is invalid")
+	ErrTokenExpired            = errors.New("Token is expired")
+	ErrTokenMissing            = errors.New("Token is missing")
+	ErrTokenMalformed          = errors.New("Token is malformed")
+	ErrTokenNotActive          = errors.New("Token is not active yet")
+	ErrTokenWrongSigningMethod = errors.New("Token has wrong signing method")
+	ErrTokenGenerateFail       = errors.New("Failed to generate token")
+	ErrorRefreshTokenEmpty     = errors.New("Refresh Token empty string")
 )

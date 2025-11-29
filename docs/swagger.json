@@ -4,7 +4,87 @@
         "contact": {}
     },
     "paths": {
-        "/users/register": {
+        "/api/auth/login": {
+            "post": {
+                "description": "Authenticate user and return access and refresh tokens",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "description": "User login payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.RequestLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "schema": {
+                            "$ref": "#/definitions/handler.LoginSuccessResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "Invalid credentials",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponseDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/refresh-token": {
+            "post": {
+                "description": "Generate a new access token using a valid refresh token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh access token",
+                "parameters": [
+                    {
+                        "description": "Refresh token payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.RefreshTokenSuccessResponse"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Token refreshed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/handler.RefreshTokenResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "Invalid refresh token",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponseDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/register": {
             "post": {
                 "description": "Create a new user account with email and full name",
                 "consumes": [
@@ -34,12 +114,85 @@
                         "schema": {
                             "$ref": "#/definitions/handler.RegisterSuccessResponse"
                         }
+                    },
+                    "default": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponseDoc"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "common.ErrorDetail": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.ErrorResponseDoc": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/common.ErrorDetail"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.LoginSuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handler.ResponseLogin"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.RefreshTokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expires_in": {
+                    "type": "integer"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.RefreshTokenSuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/handler.RefreshTokenResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
         "handler.RegisterReq": {
             "type": "object",
             "required": [
@@ -71,6 +224,35 @@
                     "type": "string"
                 },
                 "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.RequestLogin": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.ResponseLogin": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expires_in": {
+                    "type": "integer"
+                },
+                "refresh_token": {
                     "type": "string"
                 }
             }
