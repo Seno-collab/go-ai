@@ -1,5 +1,5 @@
 package restaurant
 
 type Repository interface {
-	CreateRestaurant(*Entity) (int, error)
+	CreateRestaurant(r *Entity) (int32, error)
 }

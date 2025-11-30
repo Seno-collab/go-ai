@@ -1,30 +1,86 @@
 definitions:
-  common.ErrorDetail:
-    properties:
-      field:
-        type: string
-      message:
-        type: string
-    type: object
-  handler.ErrorResponseDoc:
-    properties:
-      error:
-        $ref: '#/definitions/common.ErrorDetail'
-      message:
-        type: string
-      response_code:
-        type: string
-    type: object
-  handler.LoginSuccessResponse:
+  app.CreateRestaurantSuccessResponseDoc:
     properties:
       data:
-        $ref: '#/definitions/handler.ResponseLogin'
+        $ref: '#/definitions/restaurantapp.CreateRestaurantRequest'
       message:
         type: string
       response_code:
         type: string
     type: object
-  handler.RefreshTokenResponse:
+  app.ErrorResponseDoc:
+    properties:
+      error:
+        $ref: '#/definitions/response.ErrorDetail'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
+  app.GetProfileSuccessResponseDoc:
+    properties:
+      data:
+        $ref: '#/definitions/authapp.GetProfileResponse'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
+  app.LoginSuccessResponseDoc:
+    properties:
+      data:
+        $ref: '#/definitions/authapp.LoginResponse'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
+  app.RefreshTokenSuccessResponseDoc:
+    properties:
+      data:
+        $ref: '#/definitions/authapp.RefreshTokenResponse'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
+  app.RegisterSuccessResponseDoc:
+    properties:
+      data:
+        $ref: '#/definitions/authapp.RegisterSuccess'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
+  app.UploadLogoSuccessResponseDoc:
+    properties:
+      data:
+        $ref: '#/definitions/uploadapp.UploadLogoResponse'
+      message:
+        type: string
+      response_code:
+        type: string
+    type: object
+  authapp.GetProfileResponse:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      is_active:
+        type: boolean
+      role:
+        type: string
+    type: object
+  authapp.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  authapp.LoginResponse:
     properties:
       access_token:
         type: string
@@ -33,16 +89,21 @@ definitions:
       refresh_token:
         type: string
     type: object
-  handler.RefreshTokenSuccessResponse:
+  authapp.RefreshTokenRequest:
     properties:
-      data:
-        $ref: '#/definitions/handler.RefreshTokenResponse'
-      message:
-        type: string
-      response_code:
+      refresh_token:
         type: string
     type: object
-  handler.RegisterReq:
+  authapp.RefreshTokenResponse:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+    type: object
+  authapp.RegisterRequest:
     properties:
       email:
         type: string
@@ -50,38 +111,44 @@ definitions:
         type: string
       password:
         type: string
-    required:
-    - email
-    - password
     type: object
-  handler.RegisterSuccess:
+  authapp.RegisterSuccess:
     type: object
-  handler.RegisterSuccessResponse:
+  response.ErrorDetail:
     properties:
-      data:
-        $ref: '#/definitions/handler.RegisterSuccess'
+      field:
+        type: string
       message:
         type: string
-      response_code:
-        type: string
     type: object
-  handler.RequestLogin:
+  restaurantapp.CreateRestaurantRequest:
     properties:
+      address:
+        type: string
+      banner_url:
+        type: string
+      category:
+        type: string
+      city:
+        type: string
+      description:
+        type: string
+      district:
+        type: string
       email:
         type: string
-      password:
+      logo_url:
         type: string
-    required:
-    - email
-    - password
+      name:
+        type: string
+      phone_number:
+        type: string
+      website_url:
+        type: string
     type: object
-  handler.ResponseLogin:
+  uploadapp.UploadLogoResponse:
     properties:
-      access_token:
-        type: string
-      expires_in:
-        type: integer
-      refresh_token:
+      url:
         type: string
     type: object
 info:
@@ -98,19 +165,38 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/handler.RequestLogin'
+          $ref: '#/definitions/authapp.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Login successful
           schema:
-            $ref: '#/definitions/handler.LoginSuccessResponse'
+            $ref: '#/definitions/app.LoginSuccessResponseDoc'
         default:
-          description: Invalid credentials
+          description: Errors
           schema:
-            $ref: '#/definitions/handler.ErrorResponseDoc'
+            $ref: '#/definitions/app.ErrorResponseDoc'
       summary: User login
+      tags:
+      - Auth
+  /api/auth/profile:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the profile information of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile retrieved successfully
+          schema:
+            $ref: '#/definitions/app.GetProfileSuccessResponseDoc'
+        default:
+          description: Errors
+          schema:
+            $ref: '#/definitions/app.ErrorResponseDoc'
+      summary: Get user profile
       tags:
       - Auth
   /api/auth/refresh-token:
@@ -124,18 +210,18 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/handler.RefreshTokenSuccessResponse'
+          $ref: '#/definitions/authapp.RefreshTokenRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Token refreshed successfully
           schema:
-            $ref: '#/definitions/handler.RefreshTokenResponse'
+            $ref: '#/definitions/app.RefreshTokenSuccessResponseDoc'
         default:
-          description: Invalid refresh token
+          description: Errors
           schema:
-            $ref: '#/definitions/handler.ErrorResponseDoc'
+            $ref: '#/definitions/app.ErrorResponseDoc'
       summary: Refresh access token
       tags:
       - Auth
@@ -150,19 +236,70 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/handler.RegisterReq'
+          $ref: '#/definitions/authapp.RegisterRequest'
       produces:
       - application/json
       responses:
         "200":
           description: User created successfully
           schema:
-            $ref: '#/definitions/handler.RegisterSuccessResponse'
+            $ref: '#/definitions/app.RegisterSuccessResponseDoc'
         default:
-          description: Invalid input
+          description: Errors
           schema:
-            $ref: '#/definitions/handler.ErrorResponseDoc'
-      summary: Register a new user
+            $ref: '#/definitions/app.ErrorResponseDoc'
+      summary: Register a new userRegisterRequest
       tags:
       - Auth
+  /api/restaurant:
+    post:
+      consumes:
+      - application/json
+      description: Create a new restaurant with name, email, phone, logo_url, banner_url,...
+      parameters:
+      - description: Restaurant create payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/restaurantapp.CreateRestaurantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Create restaurant successfully
+          schema:
+            $ref: '#/definitions/app.CreateRestaurantSuccessResponseDoc'
+        default:
+          description: Errors
+          schema:
+            $ref: '#/definitions/app.ErrorResponseDoc'
+      summary: Create restaurant
+      tags:
+      - Restaurant
+  /api/upload/logo:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a logo image to storage and return the public URL
+      parameters:
+      - description: Logo file (png, jpg, jpeg)
+        in: formData
+        name: logo
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Upload logo success
+          schema:
+            $ref: '#/definitions/app.UploadLogoSuccessResponseDoc'
+        default:
+          description: Errors
+          schema:
+            $ref: '#/definitions/app.ErrorResponseDoc'
+      summary: Upload logo file
+      tags:
+      - Upload
 swagger: "2.0"

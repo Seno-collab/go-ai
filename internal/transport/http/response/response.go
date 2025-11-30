@@ -1,4 +1,4 @@
-package common
+package response
 
 import (
 	"net/http"
@@ -14,12 +14,6 @@ type ResponseDTO[T any] struct {
 	Error        *ErrorObj `json:"error,omitempty"`
 }
 
-type SuccessResponseDoc[T any] struct {
-	Message      string `json:"message"`
-	ResponseCode string `json:"response_code,omitempty"`
-	Data         *T     `json:"data,omitempty"`
-}
-
 type ErrorDetail struct {
 	Field   string `json:"field,omitempty"`
 	Message string `json:"message,omitempty"`
@@ -29,7 +23,7 @@ type ErrorObj struct {
 	Details []ErrorDetail `json:"details,omitempty"`
 }
 
-func SuccessResponse[T any](ctx echo.Context, data *T, message string) error {
+func Success[T any](ctx echo.Context, data *T, message string) error {
 	setJSON(ctx)
 	resp := &ResponseDTO[T]{
 		Data:         data,
@@ -39,7 +33,7 @@ func SuccessResponse[T any](ctx echo.Context, data *T, message string) error {
 	return ctx.JSON(http.StatusOK, resp)
 }
 
-func ErrorResponse(ctx echo.Context, code int, msg string, details ...ErrorDetail) error {
+func Error(ctx echo.Context, code int, msg string, details ...ErrorDetail) error {
 	setJSON(ctx)
 	resp := &ResponseDTO[any]{
 		Message:      msg,

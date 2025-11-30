@@ -1,5 +1,7 @@
 package restaurant
 
+import "github.com/google/uuid"
+
 type Entity struct {
 	Name        string
 	Description *string
@@ -12,8 +14,5 @@ type Entity struct {
 	PhoneNumber *string
 	WebsiteUrl  *string
 	Email       *string
+	UserID      uuid.UUID
 }
-
-// func (r *Entity) ValidateCreateRequest() error {
-
-// }

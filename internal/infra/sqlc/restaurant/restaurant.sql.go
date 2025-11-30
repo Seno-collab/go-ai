@@ -7,11 +7,13 @@ package sqlc
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createRestaurant = `-- name: CreateRestaurant :one
-INSERT INTO "restaurant" (name, description, address, category, city, district, logo_url, banner_url, phone_number, website_url, email)
-VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+INSERT INTO "restaurant" (name, description, address, category, city, district, logo_url, banner_url, phone_number, website_url, email, user_id)
+VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING id
 `
 
@@ -27,6 +29,7 @@ type CreateRestaurantParams struct {
 	PhoneNumber *string
 	WebsiteUrl  *string
 	Email       *string
+	UserID      uuid.UUID
 }
 
 func (q *Queries) CreateRestaurant(ctx context.Context, arg CreateRestaurantParams) (int32, error) {
@@ -42,6 +45,7 @@ func (q *Queries) CreateRestaurant(ctx context.Context, arg CreateRestaurantPara
 		arg.PhoneNumber,
 		arg.WebsiteUrl,
 		arg.Email,
+		arg.UserID,
 	)
 	var id int32
 	err := row.Scan(&id)
@@ -49,7 +53,7 @@ func (q *Queries) CreateRestaurant(ctx context.Context, arg CreateRestaurantPara
 }
 
 const getById = `-- name: GetById :one
-SELECT id, name, description, address, category, city, district, logo_url, banner_url, phone_number, website_url, email, created_at, updated_at FROM "restaurant" WHERE id = $1
+SELECT id, name, description, address, category, city, district, logo_url, banner_url, phone_number, website_url, email, created_at, updated_at, user_id FROM "restaurant" WHERE id = $1
 `
 
 func (q *Queries) GetById(ctx context.Context, id int32) (Restaurant, error) {
@@ -70,12 +74,13 @@ func (q *Queries) GetById(ctx context.Context, id int32) (Restaurant, error) {
 		&i.Email,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.UserID,
 	)
 	return i, err
 }
 
 const getByName = `-- name: GetByName :one
-SELECT id, name, description, address, category, city, district, logo_url, banner_url, phone_number, website_url, email, created_at, updated_at FROM "restaurant" WHERE name LIKE $1
+SELECT id, name, description, address, category, city, district, logo_url, banner_url, phone_number, website_url, email, created_at, updated_at, user_id FROM "restaurant" WHERE name LIKE $1
 `
 
 func (q *Queries) GetByName(ctx context.Context, name string) (Restaurant, error) {
@@ -96,6 +101,7 @@ func (q *Queries) GetByName(ctx context.Context, name string) (Restaurant, error
 		&i.Email,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.UserID,
 	)
 	return i, err
 }

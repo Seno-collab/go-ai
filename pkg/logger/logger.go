@@ -1,4 +1,4 @@
-package common
+package logger
 
 import (
 	"context"
@@ -87,13 +87,13 @@ func buildConfig(cfgs ...LoggerConfig) LoggerConfig {
 		cfg.Output = zerolog.ConsoleWriter{
 			Out:        defaultOutput,
 			TimeFormat: time.RFC3339,
-			FormatLevel: func(i interface{}) string {
+			FormatLevel: func(i any) string {
 				return fmt.Sprintf("[%-6s]", i) // Custom level format in square brackets
 			},
-			FormatMessage: func(i interface{}) string {
+			FormatMessage: func(i any) string {
 				return fmt.Sprintf("| %-20s |", i) // Custom message format surrounded by pipes
 			},
-			FormatCaller: func(i interface{}) string {
+			FormatCaller: func(i any) string {
 				return fmt.Sprintf("[%s]", i) // Custom caller format in brackets
 			},
 		}
@@ -112,13 +112,13 @@ func buildConfig(cfgs ...LoggerConfig) LoggerConfig {
 			cfg.Output = zerolog.ConsoleWriter{
 				Out:        defaultOutput,
 				TimeFormat: time.RFC3339,
-				FormatLevel: func(i interface{}) string {
+				FormatLevel: func(i any) string {
 					return fmt.Sprintf("[%-6s]", i) // Custom level format in square brackets
 				},
-				FormatMessage: func(i interface{}) string {
+				FormatMessage: func(i any) string {
 					return fmt.Sprintf("| %-20s |", i) // Custom message format surrounded by pipes
 				},
-				FormatCaller: func(i interface{}) string {
+				FormatCaller: func(i any) string {
 					return fmt.Sprintf("[%s]", i) // Custom caller format in brackets
 				},
 			}

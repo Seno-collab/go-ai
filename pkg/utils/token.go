@@ -1,4 +1,4 @@
-package uilts
+package utils
 
 import (
 	"time"

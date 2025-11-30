@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.RequestLogin"
+                            "$ref": "#/definitions/authapp.LoginRequest"
                         }
                     }
                 ],
@@ -43,13 +43,42 @@ const docTemplate = `{
                     "200": {
                         "description": "Login successful",
                         "schema": {
-                            "$ref": "#/definitions/handler.LoginSuccessResponse"
+                            "$ref": "#/definitions/app.LoginSuccessResponseDoc"
                         }
                     },
                     "default": {
-                        "description": "Invalid credentials",
+                        "description": "Errors",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponseDoc"
+                            "$ref": "#/definitions/app.ErrorResponseDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/profile": {
+            "get": {
+                "description": "Retrieve the profile information of the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get user profile",
+                "responses": {
+                    "200": {
+                        "description": "Profile retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/app.GetProfileSuccessResponseDoc"
+                        }
+                    },
+                    "default": {
+                        "description": "Errors",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrorResponseDoc"
                         }
                     }
                 }
@@ -75,7 +104,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.RefreshTokenSuccessResponse"
+                            "$ref": "#/definitions/authapp.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -83,13 +112,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Token refreshed successfully",
                         "schema": {
-                            "$ref": "#/definitions/handler.RefreshTokenResponse"
+                            "$ref": "#/definitions/app.RefreshTokenSuccessResponseDoc"
                         }
                     },
                     "default": {
-                        "description": "Invalid refresh token",
+                        "description": "Errors",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponseDoc"
+                            "$ref": "#/definitions/app.ErrorResponseDoc"
                         }
                     }
                 }
@@ -107,7 +136,7 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Register a new user",
+                "summary": "Register a new userRegisterRequest",
                 "parameters": [
                     {
                         "description": "User registration payload",
@@ -115,7 +144,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.RegisterReq"
+                            "$ref": "#/definitions/authapp.RegisterRequest"
                         }
                     }
                 ],
@@ -123,13 +152,91 @@ const docTemplate = `{
                     "200": {
                         "description": "User created successfully",
                         "schema": {
-                            "$ref": "#/definitions/handler.RegisterSuccessResponse"
+                            "$ref": "#/definitions/app.RegisterSuccessResponseDoc"
                         }
                     },
                     "default": {
-                        "description": "Invalid input",
+                        "description": "Errors",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponseDoc"
+                            "$ref": "#/definitions/app.ErrorResponseDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/restaurant": {
+            "post": {
+                "description": "Create a new restaurant with name, email, phone, logo_url, banner_url,...",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Restaurant"
+                ],
+                "summary": "Create restaurant",
+                "parameters": [
+                    {
+                        "description": "Restaurant create payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/restaurantapp.CreateRestaurantRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Create restaurant successfully",
+                        "schema": {
+                            "$ref": "#/definitions/app.CreateRestaurantSuccessResponseDoc"
+                        }
+                    },
+                    "default": {
+                        "description": "Errors",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrorResponseDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/upload/logo": {
+            "post": {
+                "description": "Upload a logo image to storage and return the public URL",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Upload"
+                ],
+                "summary": "Upload logo file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Logo file (png, jpg, jpeg)",
+                        "name": "logo",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Upload logo success",
+                        "schema": {
+                            "$ref": "#/definitions/app.UploadLogoSuccessResponseDoc"
+                        }
+                    },
+                    "default": {
+                        "description": "Errors",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrorResponseDoc"
                         }
                     }
                 }
@@ -137,36 +244,11 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "common.ErrorDetail": {
-            "type": "object",
-            "properties": {
-                "field": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.ErrorResponseDoc": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "$ref": "#/definitions/common.ErrorDetail"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "response_code": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.LoginSuccessResponse": {
+        "app.CreateRestaurantSuccessResponseDoc": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/handler.ResponseLogin"
+                    "$ref": "#/definitions/restaurantapp.CreateRestaurantRequest"
                 },
                 "message": {
                     "type": "string"
@@ -176,7 +258,119 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.RefreshTokenResponse": {
+        "app.ErrorResponseDoc": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/response.ErrorDetail"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.GetProfileSuccessResponseDoc": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/authapp.GetProfileResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.LoginSuccessResponseDoc": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/authapp.LoginResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.RefreshTokenSuccessResponseDoc": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/authapp.RefreshTokenResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.RegisterSuccessResponseDoc": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/authapp.RegisterSuccess"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.UploadLogoSuccessResponseDoc": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/uploadapp.UploadLogoResponse"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "response_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "authapp.GetProfileResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "authapp.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "authapp.LoginResponse": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -190,26 +384,30 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.RefreshTokenSuccessResponse": {
+        "authapp.RefreshTokenRequest": {
             "type": "object",
             "properties": {
-                "data": {
-                    "$ref": "#/definitions/handler.RefreshTokenResponse"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "response_code": {
+                "refresh_token": {
                     "type": "string"
                 }
             }
         },
-        "handler.RegisterReq": {
+        "authapp.RefreshTokenResponse": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expires_in": {
+                    "type": "integer"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "authapp.RegisterRequest": {
+            "type": "object",
             "properties": {
                 "email": {
                     "type": "string"
@@ -222,48 +420,62 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.RegisterSuccess": {
+        "authapp.RegisterSuccess": {
             "type": "object"
         },
-        "handler.RegisterSuccessResponse": {
+        "response.ErrorDetail": {
             "type": "object",
             "properties": {
-                "data": {
-                    "$ref": "#/definitions/handler.RegisterSuccess"
+                "field": {
+                    "type": "string"
                 },
                 "message": {
                     "type": "string"
-                },
-                "response_code": {
-                    "type": "string"
                 }
             }
         },
-        "handler.RequestLogin": {
+        "restaurantapp.CreateRestaurantRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
             "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "banner_url": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
-                "password": {
+                "logo_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "website_url": {
                     "type": "string"
                 }
             }
         },
-        "handler.ResponseLogin": {
+        "uploadapp.UploadLogoResponse": {
             "type": "object",
             "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "expires_in": {
-                    "type": "integer"
-                },
-                "refresh_token": {
+                "url": {
                     "type": "string"
                 }
             }

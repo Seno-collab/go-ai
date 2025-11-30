@@ -8,134 +8,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
-
-type ComboGroup struct {
-	ID          int64
-	ComboItemID int64
-	Name        string
-	MinSelect   int32
-	MaxSelect   int32
-	SortOrder   int32
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-}
-
-type ComboGroupItem struct {
-	ID              int64
-	ComboGroupID    int64
-	MenuItemID      int64
-	PriceDelta      pgtype.Numeric
-	QuantityDefault int32
-	QuantityMin     int32
-	QuantityMax     int
-	SortOrder       int32
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-}
-
-type MenuItem struct {
-	ID           int64
-	RestaurantID int32
-	TopicID      *int64
-	Type         interface{}
-	Name         string
-	Description  *string
-	ImageUrl     *string
-	Sku          *string
-	BasePrice    pgtype.Numeric
-	IsActive     bool
-	SortOrder    int32
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-}
-
-type MenuItemOptionGroup struct {
-	MenuItemID    int64
-	OptionGroupID int64
-	SortOrder     int32
-}
-
-type MenuItemVariant struct {
-	ID         int64
-	MenuItemID int64
-	Name       string
-	PriceDelta pgtype.Numeric
-	IsDefault  bool
-	SortOrder  int32
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-}
-
-type OptionGroup struct {
-	ID           int64
-	RestaurantID int32
-	Name         string
-	MinSelect    int32
-	MaxSelect    int
-	IsRequired   bool
-	SortOrder    int32
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-}
-
-type OptionItem struct {
-	ID             int64
-	OptionGroupID  int64
-	Name           *string
-	LinkedMenuItem *int64
-	PriceDelta     pgtype.Numeric
-	QuantityMin    int32
-	QuantityMax    int
-	SortOrder      int32
-	IsActive       bool
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-}
-
-type Restaurant struct {
-	ID          int32
-	Name        string
-	Description *string
-	Address     *string
-	Category    *string
-	City        *string
-	District    *string
-	LogoUrl     *string
-	BannerUrl   *string
-	PhoneNumber *string
-	WebsiteUrl  *string
-	Email       *string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-}
-
-type RestaurantHour struct {
-	RestaurantID int32
-	DayOfWeek    int32
-	OpenTime     pgtype.Time
-	CloseTime    pgtype.Time
-	IsClosed     bool
-}
 
 type Role struct {
 	ID        int32
 	RoleName  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-}
-
-type Topic struct {
-	ID           int64
-	RestaurantID int32
-	Name         string
-	Slug         *string
-	ParentID     *int64
-	SortOrder    int32
-	IsActive     bool
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
 }
 
 type User struct {

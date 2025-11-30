@@ -1,4 +1,4 @@
-package db
+package authrepo
 
 import (
 	"context"
@@ -19,8 +19,8 @@ func NewAuthRepo(pool *pgxpool.Pool) *AuthRepo {
 	}
 }
 
-func (r *AuthRepo) GetByEmail(email string) (*auth.Entity, error) {
-	u, err := r.q.GetUserByEmail(context.Background(), &email)
+func (au *AuthRepo) GetByEmail(email string) (*auth.Entity, error) {
+	u, err := au.q.GetUserByEmail(context.Background(), &email)
 	if err != nil {
 		return nil, err
 	}
@@ -35,8 +35,8 @@ func (r *AuthRepo) GetByEmail(email string) (*auth.Entity, error) {
 	}, nil
 }
 
-func (r *AuthRepo) CreateUser(a *auth.Entity) (uuid.UUID, error) {
-	id, err := r.q.CreateUser(context.Background(), sqlc.CreateUserParams{
+func (au *AuthRepo) CreateUser(a *auth.Entity) (uuid.UUID, error) {
+	id, err := au.q.CreateUser(context.Background(), sqlc.CreateUserParams{
 		Email:        &a.Email,
 		PasswordHash: a.Password,
 		FullName:     a.FullName,
@@ -47,8 +47,8 @@ func (r *AuthRepo) CreateUser(a *auth.Entity) (uuid.UUID, error) {
 
 	return id, nil
 }
-func (r *AuthRepo) GetByName(name string) (*auth.Entity, error) {
-	u, err := r.q.GetUserByName(context.Background(), name)
+func (au *AuthRepo) GetByName(name string) (*auth.Entity, error) {
+	u, err := au.q.GetUserByName(context.Background(), name)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +61,8 @@ func (r *AuthRepo) GetByName(name string) (*auth.Entity, error) {
 	}, nil
 }
 
-func (r *AuthRepo) GetById(id uuid.UUID) (*auth.Entity, error) {
-	u, err := r.q.GetUserByID(context.Background(), id)
+func (au *AuthRepo) GetById(id uuid.UUID) (*auth.Entity, error) {
+	u, err := au.q.GetUserByID(context.Background(), id)
 	if err != nil {
 		return nil, err
 	}

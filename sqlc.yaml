@@ -1,51 +1,59 @@
 version: "2"
 
+overrides:
+  go:
+    overrides:
+      - column: "restaurant.user_id"
+        go_type:
+          import: "github.com/google/uuid"
+          type: "UUID"
+      - db_type: "uuid"
+        go_type:
+          import: "github.com/google/uuid"
+          type: "UUID"
+
+      - db_type: "pg_catalog.uuid"
+        go_type:
+          import: "github.com/google/uuid"
+          type: "UUID"
+
+      - db_type: "timestamptz"
+        go_type:
+          import: "time"
+          type: "Time"
+
+      - db_type: "text"
+        go_type:
+          type: "string"
+
+      - db_type: "pg_catalog.int4"
+        nullable: true
+        go_type:
+          type: "int"
+
 sql:
-  - schema: "db/schemas.sql"
+  - schema: "db/schemas/user.schema.sql"
     queries:
       - "db/queries/user.sql"
-    engine: postgresql
+    engine: "postgresql"
     gen:
       go:
         package: "sqlc"
         out: "internal/infra/sqlc/user"
         sql_package: "pgx/v5"
-        emit_interface: false
         emit_json_tags: false
+        emit_interface: false
         emit_pointers_for_null_types: true
-        overrides:
-          - db_type: "timestamptz"
-            go_type: "time.Time"
-          - db_type: "uuid"
-            go_type: "github.com/google/uuid.UUID"
-          - db_type: "text"
-            go_type:
-              type: "string"
-          - db_type: "pg_catalog.int4"
-            nullable: true
-            go_type:
-              type: "int"
-  - schema: "db/schemas.sql"
+
+  - schema: "db/schemas/restaurant.schema.sql"
     queries:
       - "db/queries/restaurant.sql"
-    engine: postgresql
+    engine: "postgresql"
     gen:
       go:
         package: "sqlc"
         out: "internal/infra/sqlc/restaurant"
         sql_package: "pgx/v5"
-        emit_interface: false
         emit_json_tags: false
+        emit_interface: false
         emit_pointers_for_null_types: true
-        overrides:
-          - db_type: "timestamptz"
-            go_type: "time.Time"
-          - db_type: "uuid"
-            go_type: "github.com/google/uuid.UUID"
-          - db_type: "text"
-            go_type:
-              type: "string"
-          - db_type: "pg_catalog.int4"
-            nullable: true
-            go_type:
-              type: "int"

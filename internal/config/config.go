@@ -1,11 +1,10 @@
 package config
 
 import (
+	"go-ai/pkg/logger"
 	"strings"
 
 	"github.com/spf13/viper"
-
-	"go-ai/pkg/common"
 )
 
 type Config struct {
@@ -26,10 +25,17 @@ type Config struct {
 	ServerPort          string `mapstructure:"PORT"`
 	ServerHost          string `mapstructure:"server_host"`
 	Environment         string `mapstructure:"ENVIRONMENT"`
+	MinioEndPoint       string `mapstructure:"MINIO_END_POINT"`
+	MinioPort           string `mapstructure:"MINIO_PORT"`
+	MinioAccessKey      string `mapstructure:"MINIO_ACCESS_KEY"`
+	MinioSecretKey      string `mapstructure:"MINIO_SECRET_KEY"`
+	Bucket              string `mapstructure:"MINIO_BUCKET"`
+	MinioUseSSL         bool   `mapstructure:"MINIO_USE_SSL"`
 }
 
 func LoadConfig() (*Config, error) {
-	logger := common.Logger.With().Str("component", "config").Logger()
+	logger := logger.NewLogger()
+	logger.With().Str("component", "config").Logger()
 
 	// Set default values
 	setDefaults()
@@ -66,30 +72,39 @@ func LoadConfig() (*Config, error) {
 
 func setDefaults() {
 	// JWT defaults
-	viper.SetDefault("jwt_access_secret", "your-access-secret-key")
-	viper.SetDefault("jwt_refresh_secret", "your-refresh-secret-key")
-	viper.SetDefault("jwt_expires_in", 3000)            // in second
-	viper.SetDefault("jwt_refresh_expires_in", 6480000) // in second (30 days)
+	viper.SetDefault("JWT_SECRET", "your-access-secret-key")
+	viper.SetDefault("JWT_REFRESH_SECRET", "your-refresh-secret-key")
+	viper.SetDefault("JWT_EXPIRES_IN", 3000)
+	viper.SetDefault("JWT_REFRESH_EXPIRES_IN", 6480000)
+
 	// Redis defaults
-	viper.SetDefault("redis_host", "localhost")
-	viper.SetDefault("redis_port", 6379)
-	viper.SetDefault("redis_db", 0)
-	viper.SetDefault("redis_password", "")
+	viper.SetDefault("REDIS_HOST", "localhost")
+	viper.SetDefault("REDIS_PORT", 6379)
+	viper.SetDefault("REDIS_DB", 0)
+	viper.SetDefault("REDIS_PASSWORD", "")
 
 	// Database defaults
-	viper.SetDefault("db_host", "localhost")
-	viper.SetDefault("db_port", "5432")
-	viper.SetDefault("db_name", "go-ai")
-	viper.SetDefault("db_user", "postgres")
-	viper.SetDefault("db_password", "")
-	viper.SetDefault("db_sslmode", "disable")
+	viper.SetDefault("POSTGRES_HOST", "localhost")
+	viper.SetDefault("POSTGRES_PORT", "5432")
+	viper.SetDefault("POSTGRES_DB", "go-ai")
+	viper.SetDefault("POSTGRES_USER", "postgres")
+	viper.SetDefault("POSTGRES_PASSWORD", "")
+	viper.SetDefault("DB_SSLMODE", "disable")
 
 	// Server defaults
-	viper.SetDefault("server_host", "0.0.0.0")
-	viper.SetDefault("server_port", "8080")
+	viper.SetDefault("SERVER_HOST", "0.0.0.0")
+	viper.SetDefault("PORT", "8080")
 
 	// Environment
-	viper.SetDefault("environment", "development")
+	viper.SetDefault("ENVIRONMENT", "development")
+
+	// Minio defaults
+	viper.SetDefault("MINIO_END_POINT", "localhost")
+	viper.SetDefault("MINIO_PORT", "9000")
+	viper.SetDefault("MINIO_ACCESS_KEY", "minioadmin")
+	viper.SetDefault("MINIO_SECRET_KEY", "minioadmin")
+	viper.SetDefault("MINIO_USE_SSL", false)
+	viper.SetDefault("MINIO_BUCKET", "uploads")
 }
 
 // GetString returns a string value from config
