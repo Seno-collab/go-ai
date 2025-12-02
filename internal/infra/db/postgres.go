@@ -35,5 +35,5 @@ func ConnectPostgres(dsn string) (*pgxpool.Pool, error) {
 
 	}
 
-	return nil, fmt.Errorf("cannot connect to postgres after %d attempts: %w", maxRetries, err)
+	return nil, fmt.Errorf("cannot connect to postgres after %d attempts: %v", maxRetries, err)
 }
