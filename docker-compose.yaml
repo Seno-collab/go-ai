@@ -83,8 +83,29 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    env_file:
+      - grafana.env
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana-data:/var/lib/grafana
 
+    restart: always
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
 volumes:
   pgdata:
   redisdata:
   miniodata:
+  grafana-data:

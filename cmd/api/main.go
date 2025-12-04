@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -27,6 +28,8 @@ import (
 
 func main() {
 	e := echo.New()
+	p := prometheus.NewPrometheus("echo", nil)
+	p.Use(e)
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	logger := logger.NewLogger()
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(20))))
