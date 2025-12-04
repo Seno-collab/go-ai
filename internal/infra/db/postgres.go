@@ -28,7 +28,7 @@ func ConnectPostgres(dsn string) (*pgxpool.Pool, error) {
 			}
 		}
 		cancel()
-		fmt.Printf("❌ Failed: %v — retrying in %v…\n", err, backoff)
+		fmt.Printf("❌ Attempt %d/%d failed: %v — retrying in %v…\n", attempt, maxRetries, err, backoff)
 
 		time.Sleep(backoff)
 		backoff *= 2
